@@ -39,6 +39,14 @@ fn google_search_link(label: &str, query: &str) -> String {
     )
 }
 
+fn google_image_search_link(label: &str, query: &str) -> String {
+    format!(
+        r#"<a href="https://www.google.com/search?tbm=isch&q={}" target="_blank" rel="noopener noreferrer">🖼️ {}</a>"#,
+        percent_encode(query),
+        label
+    )
+}
+
 fn youtube_search_link(label: &str, query: &str) -> String {
     format!(
         r#"<a href="https://www.youtube.com/results?search_query={}" target="_blank" rel="noopener noreferrer">▶️ {}</a>"#,
@@ -59,6 +67,8 @@ fn page_shell(title: &str, body: &str) -> String {
 body {{ font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif; max-width: 780px; margin: 2rem auto; padding: 0 1rem; line-height: 1.7; color: #222; }}
 h1 {{ font-size: 1.6rem; }}
 h2 {{ font-size: 1.2rem; margin-top: 2rem; border-bottom: 2px solid #eee; padding-bottom: 0.3rem; }}
+a {{ color: #222; }}
+a:visited {{ color: #222; }}
 nav a {{ margin-right: 1rem; }}
 ul.linklist li {{ margin-bottom: 0.5rem; }}
 footer {{ margin-top: 3rem; font-size: 0.85rem; color: #777; }}
@@ -119,12 +129,32 @@ fn tourism_page() -> Html<String> {
 {area_links}
 </ul>
 
+<h2>軽井沢 牧場・レストラン・ホテル・ペンション</h2>
+<ul class="linklist">
+<li>{ranch_photo}</li>
+<li>{ranch_video}</li>
+<li>{restaurant_photo}</li>
+<li>{restaurant_video}</li>
+<li>{hotel_photo}</li>
+<li>{hotel_video}</li>
+<li>{pension_photo}</li>
+<li>{pension_video}</li>
+</ul>
+
 <h2>関連情報</h2>
 <ul class="linklist">
 <li>{telework}</li>
 <li>{coworking}</li>
 </ul>
 "#,
+        ranch_photo = google_image_search_link("軽井沢 牧場(画像)", "軽井沢 牧場"),
+        ranch_video = youtube_search_link("軽井沢 牧場", "軽井沢 牧場"),
+        restaurant_photo = google_image_search_link("軽井沢 綺麗なレストラン(画像)", "軽井沢 レストラン 絶景"),
+        restaurant_video = youtube_search_link("軽井沢 レストラン", "軽井沢 レストラン"),
+        hotel_photo = google_image_search_link("軽井沢 ホテル(画像)", "軽井沢 ホテル"),
+        hotel_video = youtube_search_link("軽井沢 ホテル", "軽井沢 ホテル"),
+        pension_photo = google_image_search_link("軽井沢 ペンション(画像)", "軽井沢 ペンション"),
+        pension_video = youtube_search_link("軽井沢 ペンション", "軽井沢 ペンション"),
         telework = youtube_search_link("軽井沢 リモートワーク 移住 体験談", "軽井沢 リモートワーク 移住 体験談"),
         coworking = google_search_link("あきる野市 コワーキングスペース", "あきる野市 コワーキングスペース"),
     );
