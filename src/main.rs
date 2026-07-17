@@ -65,7 +65,7 @@ footer {{ margin-top: 3rem; font-size: 0.85rem; color: #777; }}
 </style>
 </head>
 <body>
-<nav><a href="/">TOP</a> <a href="/tourism">観光・リモートワーク</a> <a href="/industry">IT・AI・AUDIO・貿易</a> <a href="{AON_TOKYO_URL}">aon.tokyo</a> <a href="{ARUARU_TOKYO_URL}">aruaru.tokyo</a></nav>
+<nav><a href="/">TOP</a> <a href="/tourism">観光・リモートワーク</a> <a href="/lifestyle">郊外暮らし・住まい・AUDIO</a> <a href="/industry">IT・AI・AUDIO・貿易</a> <a href="{AON_TOKYO_URL}">aon.tokyo</a> <a href="{ARUARU_TOKYO_URL}">aruaru.tokyo</a></nav>
 {body}
 <footer><p>karu.tokyo — 軽井沢・あきる野市・東京の観光とリモートワーク。 <a href="{GITHUB_ORG_URL}">GitHub (aon-co-jp)</a></p></footer>
 </body>
@@ -83,11 +83,15 @@ fn top() -> Html<String> {
     let body = format!(
         r#"<h1>karu.tokyo</h1>
 <p>軽井沢・あきる野市・東京を含む日本の観光とリモートワークをメインに、
+郊外でのんびりオーディオや映画を楽しみながらリモートワークする暮らし、
 IT・AI・AUDIO・貿易産業をご紹介するサイトです。
 姉妹サイト <a href="{AON_TOKYO_URL}">aon.tokyo</a>・<a href="{ARUARU_TOKYO_URL}">aruaru.tokyo</a> と連携しています。</p>
 
 <h2>観光・リモートワーク</h2>
 <p><a href="/tourism">→ 軽井沢・あきる野市・東京の観光とリモートワークのご紹介</a></p>
+
+<h2>郊外暮らし・住まい・AUDIO・映画</h2>
+<p><a href="/lifestyle">→ 不動産・工務店・保険・自動車/バイク・オーディオ機器売買/レンタル・貿易/文化交流のご紹介</a></p>
 
 <h2>IT・AI・AUDIO・貿易産業</h2>
 <p><a href="/industry">→ IT・AI・AUDIO・貿易産業のご紹介</a></p>
@@ -128,6 +132,48 @@ fn tourism_page() -> Html<String> {
 }
 
 #[handler]
+fn lifestyle_page() -> Html<String> {
+    let body = format!(
+        r#"<h1>郊外暮らし・住まい・AUDIO・映画</h1>
+<p>軽井沢・あきる野市など郊外でのんびりと、本格オーディオや映画を楽しみながら
+リモートワークする——そんな暮らし方をご紹介します。
+姉妹サイト <a href="{AON_TOKYO_URL}">aon.tokyo</a> のオーディオ紹介ページもあわせてご覧ください。</p>
+
+<h2>不動産・建設(オーディオルーム対応の工務店)</h2>
+<ul class="linklist">
+<li>{real_estate}</li>
+<li>{koumuten}</li>
+</ul>
+
+<h2>保険・自動車・バイク</h2>
+<ul class="linklist">
+<li>{insurance}</li>
+<li>{car_bike}</li>
+</ul>
+
+<h2>オーディオ機器の売買・レンタル・リース</h2>
+<ul class="linklist">
+<li>{amp_speaker}</li>
+<li>{ddc_dac}</li>
+</ul>
+
+<h2>オンライン貿易・文化交流</h2>
+<ul class="linklist">
+<li>{trade_culture}</li>
+</ul>
+"#,
+        real_estate = google_search_link("軽井沢 あきる野市 別荘 中古物件", "軽井沢 あきる野市 別荘 中古物件"),
+        koumuten = google_search_link("オーディオルーム 防音室 対応 工務店", "オーディオルーム 防音室 対応 工務店"),
+        insurance = google_search_link("別荘 二拠点生活 火災保険 地震保険", "別荘 二拠点生活 火災保険 地震保険"),
+        car_bike = google_search_link("郊外暮らし 自動車 バイク 中古車", "郊外暮らし 自動車 バイク 中古車"),
+        amp_speaker = google_search_link("アンプ スピーカー 中古 売買 レンタル", "アンプ スピーカー 中古 売買 レンタル"),
+        ddc_dac = google_search_link("DDC USB-DAC 中古 売買 レンタル リース", "DDC USB-DAC 中古 売買 レンタル リース"),
+        trade_culture = google_search_link("オーディオ機器 海外 オンライン貿易 文化交流", "オーディオ機器 海外 オンライン貿易 文化交流"),
+    );
+    Html(page_shell("郊外暮らし・住まい・AUDIO・映画 | karu.tokyo", &body))
+}
+
+#[handler]
 fn industry_page() -> Html<String> {
     let body = format!(
         r#"<h1>IT・AI・AUDIO・貿易産業</h1>
@@ -164,6 +210,7 @@ async fn main() -> Result<(), std::io::Error> {
         .at("/", get(top))
         .at("/healthz", get(healthz))
         .at("/tourism", get(tourism_page))
+        .at("/lifestyle", get(lifestyle_page))
         .at("/industry", get(industry_page));
 
     tracing::info!("karu-tokyo-server listening on 127.0.0.1:4300");
