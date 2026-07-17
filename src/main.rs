@@ -75,7 +75,7 @@ footer {{ margin-top: 3rem; font-size: 0.85rem; color: #777; }}
 </style>
 </head>
 <body>
-<nav><a href="/">TOP</a> <a href="/tourism">観光・リモートワーク</a> <a href="/lifestyle">郊外暮らし・住まい・AUDIO</a> <a href="/industry">IT・AI・AUDIO・貿易</a> <a href="{AON_TOKYO_URL}">aon.tokyo</a> <a href="{ARUARU_TOKYO_URL}">aruaru.tokyo</a></nav>
+<nav><a href="/">TOP</a> <a href="/tourism">観光・リモートワーク</a> <a href="/lifestyle">郊外暮らし・住まい・AUDIO</a> <a href="/industry">IT・AI・AUDIO・貿易</a> <a href="/help">困った時は</a> <a href="{AON_TOKYO_URL}">aon.tokyo</a> <a href="{ARUARU_TOKYO_URL}">aruaru.tokyo</a></nav>
 {body}
 <footer><p>karu.tokyo — 軽井沢・あきる野市・東京の観光とリモートワーク。 <a href="{GITHUB_ORG_URL}">GitHub (aon-co-jp)</a></p></footer>
 </body>
@@ -204,6 +204,45 @@ fn lifestyle_page() -> Html<String> {
 }
 
 #[handler]
+fn help_page() -> Html<String> {
+    let body = r#"<h1>サイトが見られない・警告が出る場合</h1>
+
+<h2>Google Chromeで「保護されていない通信」と出る場合</h2>
+<p>Edge(Windowsの証明書ストアを使用)では正常なのに対し、Chromeは独自の
+「Chrome Root Store」という、Windowsとは別の信頼済みルート証明書リストを
+持っています。新しいLet's Encryptのルート証明書がまだお使いのChromeの
+バージョンに反映されていない可能性があります。</p>
+<p><strong>対処法:</strong></p>
+<ol>
+<li>Chromeを開き、アドレスバーに <code>chrome://settings/help</code> と入力して更新</li>
+<li>更新後、Chromeを再起動(タスクマネージャーでプロセスが残っていないか確認)してから再度アクセス</li>
+</ol>
+
+<h2>サイトが表示されない場合(DNS_PROBE_FINISHED_NXDOMAIN等)</h2>
+<p>お使いのDNS(特にCloudflareの1.1.1.1)が、ドメインの権威サーバーに
+一時的に到達できないことがあります。Google(8.8.8.8)・Quad9(9.9.9.9)
+など別のDNSでは問題なく解決できることが多いです。</p>
+<p><strong>対処法:</strong></p>
+<ol>
+<li>スマホのモバイル回線(Wi-Fiオフ)で同じURLにアクセスしてみる</li>
+<li>Windowsの場合: 設定 → ネットワークとインターネット → プロパティ
+(使用中の接続) → DNSサーバーの割り当てを「手動」にし、以下を設定して保存
+<ul>
+<li><strong>優先DNS</strong>欄: <code>8.8.8.8</code> のみ入力(<code>8.8.4.4</code>と
+まとめて<code>/</code>区切りで入力すると「無効なエントリ」エラーになるので注意)</li>
+<li><strong>代替DNS</strong>欄: <code>8.8.4.4</code> を別欄に入力</li>
+<li>「HTTPS経由のDNS」が「オン(手動テンプレート)」になっている場合は、
+まず「オフ」にしてからシンプルな設定で保存を試す</li>
+</ul>
+</li>
+<li>それでも解決しない場合は、単純にDNSの反映待ち(通常数分〜1時間程度)
+であることも多いので、時間を置いて再度アクセス</li>
+</ol>
+"#;
+    Html(page_shell("困った時は | karu.tokyo", body))
+}
+
+#[handler]
 fn industry_page() -> Html<String> {
     let body = format!(
         r#"<h1>IT・AI・AUDIO・貿易産業</h1>
@@ -241,7 +280,8 @@ async fn main() -> Result<(), std::io::Error> {
         .at("/healthz", get(healthz))
         .at("/tourism", get(tourism_page))
         .at("/lifestyle", get(lifestyle_page))
-        .at("/industry", get(industry_page));
+        .at("/industry", get(industry_page))
+        .at("/help", get(help_page));
 
     tracing::info!("karu-tokyo-server listening on 127.0.0.1:4300");
     Server::new(TcpListener::bind("127.0.0.1:4300")).run(app).await
