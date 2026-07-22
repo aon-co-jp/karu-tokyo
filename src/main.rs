@@ -85,11 +85,19 @@ footer {{ margin-top: 3rem; font-size: 0.85rem; color: #777; }}
 
 #[handler]
 fn healthz() -> &'static str {
+    healthz_impl()
+}
+
+fn healthz_impl() -> &'static str {
     "ok"
 }
 
 #[handler]
 fn top() -> Html<String> {
+    top_impl()
+}
+
+fn top_impl() -> Html<String> {
     let body = format!(
         r#"<h1>karu.tokyo</h1>
 <p>軽井沢・あきる野市・東京を含む日本の観光とリモートワークをメインに、
@@ -112,6 +120,10 @@ IT・AI・AUDIO・貿易産業をご紹介するサイトです。
 
 #[handler]
 fn tourism_page() -> Html<String> {
+    tourism_page_impl()
+}
+
+fn tourism_page_impl() -> Html<String> {
     let areas = ["軽井沢", "あきる野市", "東京"];
     let area_links: String = areas
         .iter()
@@ -163,6 +175,10 @@ fn tourism_page() -> Html<String> {
 
 #[handler]
 fn lifestyle_page() -> Html<String> {
+    lifestyle_page_impl()
+}
+
+fn lifestyle_page_impl() -> Html<String> {
     let body = format!(
         r#"<h1>郊外暮らし・住まい・AUDIO・映画</h1>
 <p>軽井沢・あきる野市など郊外でのんびりと、本格オーディオや映画を楽しみながら
@@ -205,6 +221,10 @@ fn lifestyle_page() -> Html<String> {
 
 #[handler]
 fn help_page() -> Html<String> {
+    help_page_impl()
+}
+
+fn help_page_impl() -> Html<String> {
     let body = r#"<h1>サイトが見られない・警告が出る場合</h1>
 
 <h2>Google Chromeで「保護されていない通信」と出る場合</h2>
@@ -253,6 +273,10 @@ DNSだけ変更できます。
 
 #[handler]
 fn industry_page() -> Html<String> {
+    industry_page_impl()
+}
+
+fn industry_page_impl() -> Html<String> {
     let body = format!(
         r#"<h1>IT・AI・AUDIO・貿易産業</h1>
 <p>IT・AI開発、本格オーディオ(JBL・B&amp;W等)、そして貿易産業——
@@ -279,6 +303,103 @@ fn industry_page() -> Html<String> {
         trade = google_search_link("日本 貿易産業 最新動向", "日本 貿易産業 最新動向"),
     );
     Html(page_shell("IT・AI・AUDIO・貿易産業 | karu.tokyo", &body))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn percent_encode_keeps_unreserved_chars() {
+        assert_eq!(percent_encode("abc-XYZ_0.9~"), "abc-XYZ_0.9~");
+    }
+
+    #[test]
+    fn percent_encode_escapes_space_and_multibyte() {
+        assert_eq!(percent_encode("a b"), "a%20b");
+        // "軽" is U+8EFD -> UTF-8: E8 BB BD
+        assert_eq!(percent_encode("軽"), "%E8%BB%BD");
+    }
+
+    #[test]
+    fn google_search_link_builds_expected_href() {
+        let html = google_search_link("ラベル", "軽井沢 観光");
+        assert!(html.contains(r#"href="https://www.google.com/search?q=%E8%BB%BD%E4%BA%95%E6%B2%A2%20%E8%A6%B3%E5%85%89""#));
+        assert!(html.contains("target=\"_blank\""));
+        assert!(html.contains("rel=\"noopener noreferrer\""));
+        assert!(html.contains("ラベル"));
+    }
+
+    #[test]
+    fn google_image_search_link_uses_isch_param() {
+        let html = google_image_search_link("画像", "テスト");
+        assert!(html.contains("tbm=isch"));
+    }
+
+    #[test]
+    fn youtube_search_link_uses_search_query_param() {
+        let html = youtube_search_link("動画", "テスト");
+        assert!(html.contains("search_query="));
+        assert!(html.contains("youtube.com/results"));
+    }
+
+    #[test]
+    fn page_shell_links_to_sister_sites_and_nav() {
+        let html = page_shell("t", "<p>body</p>");
+        assert!(html.contains(AON_TOKYO_URL));
+        assert!(html.contains(ARUARU_TOKYO_URL));
+        assert!(html.contains(GITHUB_ORG_URL));
+        assert!(html.contains("<title>t</title>"));
+        assert!(html.contains("<p>body</p>"));
+        assert!(html.contains(r#"href="/tourism""#));
+        assert!(html.contains(r#"href="/lifestyle""#));
+        assert!(html.contains(r#"href="/industry""#));
+        assert!(html.contains(r#"href="/help""#));
+    }
+
+    #[test]
+    fn healthz_returns_ok() {
+        assert_eq!(healthz_impl(), "ok");
+    }
+
+    #[test]
+    fn top_page_renders_all_section_links() {
+        let html = top_impl().0;
+        assert!(html.contains("karu.tokyo"));
+        assert!(html.contains(r#"href="/tourism""#));
+        assert!(html.contains(r#"href="/lifestyle""#));
+        assert!(html.contains(r#"href="/industry""#));
+    }
+
+    #[test]
+    fn tourism_page_renders_areas() {
+        let html = tourism_page_impl().0;
+        assert!(html.contains("軽井沢"));
+        assert!(html.contains("あきる野市"));
+        assert!(html.contains("東京"));
+    }
+
+    #[test]
+    fn lifestyle_page_renders_sections() {
+        let html = lifestyle_page_impl().0;
+        assert!(html.contains("不動産"));
+        assert!(html.contains("オーディオ機器"));
+    }
+
+    #[test]
+    fn industry_page_renders_sections() {
+        let html = industry_page_impl().0;
+        assert!(html.contains("IT・AI"));
+        assert!(html.contains("AUDIO"));
+        assert!(html.contains("貿易"));
+    }
+
+    #[test]
+    fn help_page_renders_dns_troubleshooting() {
+        let html = help_page_impl().0;
+        assert!(html.contains("Chrome Root Store"));
+        assert!(html.contains("8.8.8.8"));
+    }
 }
 
 #[tokio::main]
