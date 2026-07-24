@@ -129,6 +129,8 @@ The items below are simply introduced as reported information; no independent me
 <span style="color:#555;">クリックした瞬間に検索結果を表示します(効果を保証するものではありません) / Opens a fresh search each time you click (no claims of efficacy are made here).</span></li>
 <li>{baking_soda_search_jp} / {baking_soda_search_en}<br>
 <span style="color:#555;">クリックした瞬間に検索結果を表示します(効果を保証するものではありません) / Opens a fresh search each time you click (no claims of efficacy are made here).</span></li>
+<li>{citric_acid_search_jp} / {citric_acid_search_en}<br>
+<span style="color:#555;">クリックした瞬間に検索結果を表示します(効果を保証するものではありません) / Opens a fresh search each time you click (no claims of efficacy are made here).</span></li>
 </ul>
 "##,
         cancer_search_jp = youtube_search_link("がんの治療法について調べる", "がん 治療法"),
@@ -139,6 +141,8 @@ The items below are simply introduced as reported information; no independent me
         banana_search_en = youtube_search_link("Search \"banana cancer treatment\"", "banana cancer treatment"),
         baking_soda_search_jp = youtube_search_link("「重曹水 ガン治療法」で調べる", "重曹水 ガン治療法"),
         baking_soda_search_en = youtube_search_link("Search \"baking soda water cancer treatment\"", "baking soda water cancer treatment"),
+        citric_acid_search_jp = youtube_search_link("「クエン酸水 ガン治療法」で調べる", "クエン酸水 ガン治療法"),
+        citric_acid_search_en = youtube_search_link("Search \"citric acid water cancer treatment\"", "citric acid water cancer treatment"),
     )
 }
 
