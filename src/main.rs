@@ -92,12 +92,33 @@ fn healthz_impl() -> &'static str {
     "ok"
 }
 
+/// 民間のガン治療法に関する報道記事の紹介セクション(2026-07-24追加)。
+/// ユーザーから提供された実際の報道見出し・リンクをそのまま紹介するのみに留め、
+/// 独自の医療的な効能・安全性の主張や推奨は一切追加しない。
+fn cancer_news_section() -> String {
+    r##"<h2>民間のガン治療法に関する報道 / News on Cancer Treatment Research</h2>
+<p style="color:#555;font-size:0.9rem;">以下は報道・公開情報の紹介のみで、独自の医療的な効能・安全性の主張は行っていません。 /
+The items below are simply introduced as reported information; no independent medical claims are made.</p>
+<ul class="linklist">
+<li>衝撃波で腫瘍を破壊「メスも針も使わない」肝臓がんの新治療法　大阪公立大の研究チームが特定臨床研究を開始　来年中の薬事承認を目指す<br>
+<span style="color:#555;">Destroying Tumors with Shockwaves — a New "No Scalpel, No Needle" Liver Cancer Treatment: Osaka Metropolitan University Research Team Begins Specified Clinical Research, Aiming for Drug/Medical Device Approval Within the Next Year</span><br>
+<a href="https://www.facebook.com/masahiro.ishizuka.54?locale=ja_JP" target="_blank" rel="noopener noreferrer">📘 Facebook</a> /
+<a href="https://www.youtube.com/watch?v=hRFXYCGX8Fo" target="_blank" rel="noopener noreferrer">▶️ YouTube</a></li>
+<li><a href="https://www.youtube.com/watch?v=84EkcJmgmnQ" target="_blank" rel="noopener noreferrer">世界初！からだ自身が"がん治療"　九州大学が開発</a><br>
+<span style="color:#555;">A World First! The Body Itself Fights Cancer — Developed by Kyushu University</span></li>
+<li><a href="https://aon.tokyo/cancer" target="_blank" rel="noopener noreferrer">民間のガン治療法についての情報は aon.tokyo/cancer をご覧ください</a><br>
+<span style="color:#555;">For information on non-clinical/private-sector cancer treatment approaches, see aon.tokyo/cancer.</span></li>
+</ul>
+"##.to_string()
+}
+
 #[handler]
 fn top() -> Html<String> {
     top_impl()
 }
 
 fn top_impl() -> Html<String> {
+    let cancer_news = cancer_news_section();
     let body = format!(
         r#"<h1>karu.tokyo</h1>
 <p>軽井沢・あきる野市・東京を含む日本の観光とリモートワークをメインに、
@@ -113,6 +134,8 @@ IT・AI・AUDIO・貿易産業をご紹介するサイトです。
 
 <h2>IT・AI・AUDIO・貿易産業</h2>
 <p><a href="/industry">→ IT・AI・AUDIO・貿易産業のご紹介</a></p>
+
+{cancer_news}
 "#
     );
     Html(page_shell("karu.tokyo — 軽井沢・あきる野・東京の観光とリモートワーク", &body))
