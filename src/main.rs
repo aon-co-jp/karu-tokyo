@@ -55,6 +55,16 @@ fn youtube_search_link(label: &str, query: &str) -> String {
     )
 }
 
+/// Googleの動画検索(YouTube以外の動画サイトも横断的に含まれる)を、
+/// クリックした瞬間に行うリンク。
+fn google_video_search_link(label: &str, query: &str) -> String {
+    format!(
+        r#"<a href="https://www.google.com/search?q={}&tbm=vid" target="_blank" rel="noopener noreferrer">🎬 {}</a>"#,
+        percent_encode(query),
+        label
+    )
+}
+
 fn page_shell(title: &str, body: &str) -> String {
     format!(
         r#"<!DOCTYPE html>
@@ -96,7 +106,8 @@ fn healthz_impl() -> &'static str {
 /// ユーザーから提供された実際の報道見出し・リンクをそのまま紹介するのみに留め、
 /// 独自の医療的な効能・安全性の主張や推奨は一切追加しない。
 fn cancer_news_section() -> String {
-    r##"<h2>民間のガン治療法に関する報道 / News on Cancer Treatment Research</h2>
+    format!(
+        r##"<h2>民間のガン治療法に関する報道 / News on Cancer Treatment Research</h2>
 <p style="color:#555;font-size:0.9rem;">以下は報道・公開情報の紹介のみで、独自の医療的な効能・安全性の主張は行っていません。 /
 The items below are simply introduced as reported information; no independent medical claims are made.</p>
 <ul class="linklist">
@@ -110,8 +121,17 @@ The items below are simply introduced as reported information; no independent me
 <a href="https://www.facebook.com/reel/1793445321653771?locale=ja_JP" target="_blank" rel="noopener noreferrer">📘 Facebook(予備 / backup)</a></li>
 <li><a href="https://aon.tokyo/cancer" target="_blank" rel="noopener noreferrer">民間のガン治療法についての情報は aon.tokyo/cancer をご覧ください</a><br>
 <span style="color:#555;">For information on non-clinical/private-sector cancer treatment approaches, see aon.tokyo/cancer.</span></li>
+<li>{cancer_search_jp} / {cancer_search_en}<br>
+<span style="color:#555;">クリックした瞬間に検索結果を表示します(効果を保証するものではありません) / Opens a fresh search each time you click (no claims of efficacy are made here).</span></li>
+<li>{cancer_video_search_jp} / {cancer_video_search_en}<br>
+<span style="color:#555;">YouTube以外の動画も含めた横断検索です(効果を保証するものではありません) / A broader video search beyond YouTube (no claims of efficacy are made here).</span></li>
 </ul>
-"##.to_string()
+"##,
+        cancer_search_jp = youtube_search_link("がんの治療法について調べる", "がん 治療法"),
+        cancer_search_en = youtube_search_link("Cancer treatment methods", "cancer treatment methods"),
+        cancer_video_search_jp = google_video_search_link("がんの治療法の動画を調べる", "がん 治療法"),
+        cancer_video_search_en = google_video_search_link("Cancer treatment method videos", "cancer treatment methods"),
+    )
 }
 
 #[handler]
